@@ -53,8 +53,6 @@ class Movimentacao(db.Model):
     estoque_apos = db.Column(db.Integer, nullable=False)
     observacao = db.Column(db.String(200))
     data = db.Column(db.DateTime, default=lambda: datetime.now(pytz.utc))
-    
-    produto = db.relationship('Produto', backref=db.backref('movimentacoes', lazy=True))
 
     def to_dict(self):
         produto = self.produto
