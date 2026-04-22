@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Controle de Produtos</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <img src="attached_assets/Distribuidora Genius-4_1760558647786.png" alt="Comercial Genius" class="logo">
+      <h1>Sistema de Controle e Cadastro de Produtos</h1>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="productManager.switchTab('products')">Produtos</button>
+        <button class="tab-btn" onclick="productManager.switchTab('movements')">Movimentações</button>
+        <button class="tab-btn" onclick="productManager.switchTab('reports')">Relatórios</button>
+      </div>
+    </header>
+
+    <div id="productsTab" class="tab-content active">
+      <div class="main-content">
+        <section class="form-section">
+          <h2>Cadastrar/Editar Produto</h2>
+          <form id="productForm">
+            <div class="form-group">
+              <label for="codigo">Código:</label>
+              <input type="text" id="codigo" name="codigo" required>
+            </div>
+
+            <div class="form-group">
+              <label for="quantidade">Quantidade Inicial:</label>
+              <input type="number" id="quantidade" name="quantidade" step="1" required>
+            </div>
+
+            <div class="form-group">
+              <label for="descricao">Descrição:</label>
+              <textarea id="descricao" name="descricao" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="embalagem">Embalagem:</label>
+              <input type="text" id="embalagem" name="embalagem" required>
+            </div>
+
+            <div class="form-group">
+              <label for="valor">Valor Unitário (R$):</label>
+              <input type="number" id="valor" name="valor" step="0.01" required>
+            </div>
+
+            <div class="form-buttons">
+              <button type="submit" class="btn btn-primary" id="submitBtn">Adicionar Produto</button>
+              <button type="button" class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancelar</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="table-section">
+          <div class="table-header">
+            <h2>Produtos Cadastrados</h2>
+            <div class="search-box">
+              <input type="text" id="searchInput" placeholder="Buscar produtos...">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table id="productsTable">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Quantidade</th>
+                  <th>Descrição</th>
+                  <th>Embalagem</th>
+                  <th>Valor Unit.</th>
+                  <th>Total</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody">
+              </tbody>
+            </table>
+          </div>
+
+          <div class="summary">
+            <div class="summary-item">
+              <strong>Total de Produtos:</strong>
+              <span id="totalProducts">0</span>
+            </div>
+            <div class="summary-item">
+              <strong>Quantidade Total:</strong>
+              <span id="totalQuantity">0</span>
+            </div>
+            <div class="summary-item highlight">
+              <strong>Valor Total:</strong>
+              <span id="totalValue">R$ 0,00</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="movementsTab" class="tab-content">
+      <div class="main-content">
+        <section class="form-section">
+          <h2>Registrar Movimentação</h2>
+          <form id="movementForm">
+            <div class="form-group">
+              <label for="movProductCode">Produto:</label>
+              <select id="movProductCode" name="movProductCode" required>
+                <option value="">Selecione um produto</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="movType">Tipo de Movimentação:</label>
+              <select id="movType" name="movType" required>
+                <option value="entrada">Entrada</option>
+                <option value="saida">Saída</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="movQuantity">Quantidade:</label>
+              <input type="number" id="movQuantity" name="movQuantity" step="1" min="1" required>
+            </div>
+
+            <div class="form-group">
+              <label for="movObservation">Observação:</label>
+              <textarea id="movObservation" name="movObservation" rows="3" placeholder="Motivo, fornecedor, cliente, etc."></textarea>
+            </div>
+
+            <div class="form-buttons">
+              <button type="submit" class="btn btn-primary">Registrar Movimentação</button>
+            </div>
+          </form>
+
+          <div class="stock-info" id="stockInfo">
+            <p><strong>Estoque Atual:</strong> <span id="currentStock">-</span></p>
+          </div>
+        </section>
+
+        <section class="table-section">
+          <div class="table-header">
+            <h2>Histórico de Movimentações</h2>
+            <div class="filter-box">
+              <select id="movementFilter">
+                <option value="all">Todas</option>
+                <option value="entrada">Entradas</option>
+                <option value="saida">Saídas</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table id="movementsTable">
+              <thead>
+                <tr>
+                  <th>Data/Hora</th>
+                  <th>Código</th>
+                  <th>Descrição</th>
+                  <th>Estoque Inicial</th>
+                  <th>Tipo</th>
+                  <th>Quantidade</th>
+                  <th>Estoque Após</th>
+                  <th>Observação</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="movementsTableBody">
+              </tbody>
+            </table>
+          </div>
+
+          <div class="summary">
+            <div class="summary-item">
+              <strong>Total de Movimentações:</strong>
+              <span id="totalMovements">0</span>
+            </div>
+            <div class="summary-item">
+              <strong>Total de Entradas:</strong>
+              <span id="totalEntradas">0</span>
+            </div>
+            <div class="summary-item">
+              <strong>Total de Saídas:</strong>
+              <span id="totalSaidas">0</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="reportsTab" class="tab-content">
+      <div class="reports-container">
+        <section class="report-section">
+          <div class="report-header">
+            <h2>Relatórios</h2>
+            <p>Selecione o tipo de relatório que deseja visualizar e imprimir</p>
+          </div>
+
+          <div class="report-options">
+            <button class="btn btn-primary" onclick="productManager.generateProductsReport()">
+              Relatório de Estoque de Produtos
+            </button>
+            <button class="btn btn-primary" onclick="productManager.generateMovementsReport()">
+              Relatório de Movimentações
+            </button>
+          </div>
+
+          <div id="reportContent" class="report-content">
+            <div class="report-placeholder">
+              <p>Clique em um dos botões acima para gerar um relatório</p>
+            </div>
+          </div>
+
+          <div id="printButton" class="print-button-container" style="display: none;">
+            <button class="btn btn-primary" onclick="productManager.printReport()">
+              🖨️ Imprimir Relatório
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

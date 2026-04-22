@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.sqlite
+.env
+.env.local
+venv/
+env/
+node_modules/
+.vercel/
