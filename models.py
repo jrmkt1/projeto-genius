@@ -48,19 +48,24 @@ class Movimentacao(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     produto_id = db.Column(db.Integer, db.ForeignKey('produtos.id'), nullable=False)
-    tipo = db.Column(db.String(20), nullable=False)
+    tipo = db.Column(db.String(20), nullable=False) # 'entrada' ou 'saida'
     quantidade = db.Column(db.Integer, nullable=False)
     estoque_apos = db.Column(db.Integer, nullable=False)
-    observacao = db.Column(db.Text)
-    data = db.Column(db.DateTime, default=get_brazil_time, nullable=False)
+    observacao = db.Column(db.String(200))
+    data = db.Column(db.DateTime, default=lambda: datetime.now(pytz.utc))
     
+    produto = db.relationship('Produto', backref=db.backref('movimentacoes', lazy=True))
+
     def to_dict(self):
-        produto = Produto.query.get(self.produto_id)
+        produto = self.produto
         data_brasil = self.data
-        if data_brasil.tzinfo is None:
-            data_brasil = pytz.utc.localize(data_brasil).astimezone(BRAZIL_TZ)
-        else:
-            data_brasil = data_brasil.astimezone(BRAZIL_TZ)
+        data_str = ''
+        if data_brasil:
+            if data_brasil.tzinfo is None:
+                data_brasil = pytz.utc.localize(data_brasil).astimezone(BRAZIL_TZ)
+            else:
+                data_brasil = data_brasil.astimezone(BRAZIL_TZ)
+            data_str = data_brasil.strftime('%Y-%m-%dT%H:%M:%S')
         
         return {
             'id': self.id,
@@ -71,5 +76,5 @@ class Movimentacao(db.Model):
             'quantidade': self.quantidade,
             'estoqueApos': self.estoque_apos,
             'observacao': self.observacao,
-            'data': data_brasil.strftime('%Y-%m-%dT%H:%M:%S')
+            'data': data_str
         }

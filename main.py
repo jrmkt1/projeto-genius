@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from sqlalchemy.orm import joinedload
 from models import db, Produto, Movimentacao
 
 
@@ -127,8 +128,11 @@ def delete_produto(produto_id):
 
 @app.route('/api/movimentacoes', methods=['GET'])
 def get_movimentacoes():
-    movimentacoes = Movimentacao.query.order_by(Movimentacao.data.desc()).all()
-    return jsonify([m.to_dict() for m in movimentacoes])
+    try:
+        movimentacoes = Movimentacao.query.options(joinedload(Movimentacao.produto)).order_by(Movimentacao.data.desc()).all()
+        return jsonify([m.to_dict() for m in movimentacoes])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/movimentacoes', methods=['POST'])
